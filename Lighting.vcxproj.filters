@@ -49,5 +49,9 @@
     <None Include="Shader\default.vs">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shaders\default.fs" />
+    <None Include="Shaders\default.vs" />
+    <None Include="Shaders\light.vs" />
+    <None Include="Shaders\light.fs" />
   </ItemGroup>
 </Project>

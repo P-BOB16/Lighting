@@ -14,18 +14,12 @@ int main()
 	Window ourWindow(800, 600, "Lighting");
 	glEnable(GL_DEPTH_TEST);
 	Shader ourShader("Shaders/default.vs", "Shaders/default.fs");
+	Shader lightShader("Shaders/default.vs", "Shaders/light.fs");
+	
 	Mesh ourMesh;
 
-	ourShader.use();
-	ourShader.setInt("texture0", 0);
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-	};
+	//ourShader.use();
+	//ourShader.setInt("texture0", 0);
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -33,6 +27,7 @@ int main()
 	ourWindow.viewCamera = &ourCamera;
 
 	glClearColor(0.200f, 0.200f, 0.200f, 1.0f);
+
 	while (ourWindow.isRunning()) 
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
@@ -43,22 +38,28 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
-
+		ourShader.setVec3("boxColor", 1.0f, 0.5f, 0.35f);
+		ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		glm::mat4 projection = glm::perspective(glm::radians(ourCamera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
 		ourShader.setMat4("projection", projection);
 
 		glm::mat4 view = ourCamera.GetViewMatrix();
 		ourShader.setMat4("view", view);
 
-		for (unsigned int i = 0; i < 5; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.0f));
-			ourShader.setMat4("model", model);
-			ourMesh.draw();
-		}
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.5f, 0.0f));
+		ourShader.setMat4("model", model);
+
+		ourMesh.drawLight();
+
+		lightShader.use();
+		model = glm::translate(model, glm::vec3(2.0f, -0.4f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.2f));
+		lightShader.setMat4("projection", projection);
+		lightShader.setMat4("view", view);
+		lightShader.setMat4("model", model);
+
+		ourMesh.drawBox();
 
 		ourWindow.update();
 	}

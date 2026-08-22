@@ -13,6 +13,7 @@ private:
     float lastX = 400.0f;
     float lastY = 300.0f;
     bool firstMouse = true;
+    float change = 1.0f;
 
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
@@ -91,6 +92,11 @@ public:
         glfwSetScrollCallback(window, scroll_callback);
     }
 
+    float getChange() 
+    {
+        return change;
+    }
+
     void processInput(float deltaTime)
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -105,6 +111,15 @@ public:
                 viewCamera->ProcessKeyboard(LEFT, deltaTime);
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
                 viewCamera->ProcessKeyboard(RIGHT, deltaTime);
+
+            if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+                change += 1 * deltaTime;
+
+            if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+                change -= 1 * deltaTime;
+
+            if (change < 0.0f) change = 0.0f;
+            if (change > 1.0f) change = 1.0f;
         }
     }
 

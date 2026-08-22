@@ -8,93 +8,96 @@
 class Mesh
 {
 private:
-	unsigned int VAO, VBO, texture;
+	unsigned int cubeVAO, lightVAO, VBO, texture;
 	int vertexCount, width, height, nrChannels;
     unsigned char* data;
 
 public:
 	Mesh()
 	{
-        std::vector<float> vertices = {
-            // Front face
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // Bottom-Left
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // Bottom-Right
-             0.0f,  0.5f,  0.0f,  0.5f, 1.0f, // Apex (Top-Center)
+       std::vector<float> vertices = {
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
 
-             // Back face
-              0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-Left
-             -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // Bottom-Right
-              0.0f,  0.5f,  0.0f,  0.5f, 1.0f, // Apex
+    -0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
 
-              // Left face
-              -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-Left
-              -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // Bottom-Right
-               0.0f,  0.5f,  0.0f,  0.5f, 1.0f, // Apex
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
 
-               // Right face
-                0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // Bottom-Left
-                0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // Bottom-Right
-                0.0f,  0.5f,  0.0f,  0.5f, 1.0f, // Apex
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
 
-                // Bottom face (square, requires 2 triangles - kept exact same as cube base)
-                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-                 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f, -0.5f,
+
+    -0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f
         };
 
-		vertexCount = vertices.size() / 5;
+		vertexCount = vertices.size() / 3;
 
 		glGenBuffers(1, &VBO);
-		glGenVertexArrays(1, &VAO);
+		glGenVertexArrays(1, &cubeVAO);
+        glGenVertexArrays(1, &lightVAO);
 
-		glBindVertexArray(VAO);
+		glBindVertexArray(cubeVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        stbi_set_flip_vertically_on_load(true);
-        data = stbi_load("Assets/Texture/void.jpg", &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-        stbi_image_free(data);
-
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
+        glBindVertexArray(lightVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
 	}
-	void draw()
+	void drawBox()
 	{
-        glBindTexture(GL_TEXTURE_2D, texture);
-		glBindVertexArray(VAO);
+		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 		glBindVertexArray(0);
 	}
 
+    void drawLight()
+    {
+        glBindVertexArray(lightVAO);
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glBindVertexArray(0);
+    }
+
 	~Mesh()
 	{
-		glDeleteVertexArrays(1, &VAO);
+		glDeleteVertexArrays(1, &cubeVAO);
+        glDeleteVertexArrays(1, &lightVAO);
 		glDeleteBuffers(1, &VBO);
 	}
 };

@@ -170,6 +170,10 @@
     <ClInclude Include="Libraries\include\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\default.fs" />
+    <None Include="Shaders\default.vs" />
+    <None Include="Shaders\light.fs" />
+    <None Include="Shaders\light.vs" />
     <None Include="Shader\default.fs" />
     <None Include="Shader\default.vs" />
   </ItemGroup>
