@@ -31,11 +31,11 @@ int main()
 	ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 	ourShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
 	ourShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-	ourShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+	ourShader.setVec3("material.specular", 0.0f, 0.0f, 0.0f);
 	ourShader.setFloat("material.shininess", 32.0f);
 
-	ourShader.setInt("decTex", 0);
-	lightShader.setInt("autoTex", 0);
+	ourShader.setInt("material.diffuse", 0);
+	ourShader.setInt("material.specular", 1);
 
 	while (ourWindow.isRunning()) 
 	{
@@ -50,13 +50,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
-		glm::vec3 lightColor;
 		ourShader.setVec3("camPos", ourCamera.Position);
 		ourShader.setVec3("light.position", lightPos);
-
-		lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
-		lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
-		lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+		glm::vec3 lightColor(1.0f);
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 		ourShader.setVec3("light.ambient", ambientColor);
@@ -75,13 +71,18 @@ int main()
 		ourMesh.drawBox();
 
 		lightShader.use();
+		glm::vec3 reflectColor(1.0f);
+		reflectColor = reflectColor * lightColor;
+
 		model = glm::mat4(1.0);
 		model = glm::translate(model, lightPos);
 		model = glm::scale(model, glm::vec3(0.2f));
 		//model = glm::rotate(model, glm::radians((float)glfwGetTime() * 90), glm::vec3(0.0f, 0.0f, 1.0f));
+
 		lightShader.setMat4("projection", projection);
 		lightShader.setMat4("view", view);
 		lightShader.setMat4("model", model);
+		lightShader.setVec3("reflectColor", reflectColor);
 
 		ourMesh.drawLight();
 
