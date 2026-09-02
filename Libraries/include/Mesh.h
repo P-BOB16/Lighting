@@ -11,7 +11,7 @@ unsigned int loadTexture(const char *path);
 class Mesh
 {
 private:
-    unsigned int cubeVAO, lightVAO, VBO, diffuseMap, specularMap;
+    unsigned int cubeVAO, lightVAO, VBO, diffuseMap, specularMap, emmisonMap;
     int vertexCount, width, height, nrChannels;
     unsigned char* data;
 
@@ -83,8 +83,10 @@ public:
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        diffuseMap = loadTexture("Assets/Texture/container2.png");
+        diffuseMap  = loadTexture("Assets/Texture/container2.png");
         specularMap = loadTexture("Assets/Texture/container2_specular.png");
+        emmisonMap  = loadTexture("Assets/Texture/matrix.jpg");
+       
 
         glBindVertexArray(lightVAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -105,6 +107,8 @@ public:
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specularMap);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, emmisonMap);
         glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         glBindVertexArray(0);

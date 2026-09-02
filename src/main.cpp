@@ -27,15 +27,10 @@ int main()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	ourShader.use();
-	ourShader.setVec3("boxColor", 1.0f, 0.5f, 0.35f);
-	ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-	ourShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-	ourShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-	ourShader.setVec3("material.specular", 0.0f, 0.0f, 0.0f);
 	ourShader.setFloat("material.shininess", 32.0f);
-
 	ourShader.setInt("material.diffuse", 0);
 	ourShader.setInt("material.specular", 1);
+	ourShader.setInt("material.emission", 2);
 
 	while (ourWindow.isRunning()) 
 	{
@@ -58,6 +53,7 @@ int main()
 		ourShader.setVec3("light.ambient", ambientColor);
 		ourShader.setVec3("light.diffuse", diffuseColor);
 		ourShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("time", glfwGetTime());
 
 		glm::mat4 projection = glm::perspective(glm::radians(ourCamera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
 		glm::mat4 view = ourCamera.GetViewMatrix();
@@ -71,8 +67,6 @@ int main()
 		ourMesh.drawBox();
 
 		lightShader.use();
-		glm::vec3 reflectColor(1.0f);
-		reflectColor = reflectColor * lightColor;
 
 		model = glm::mat4(1.0);
 		model = glm::translate(model, lightPos);
@@ -82,7 +76,6 @@ int main()
 		lightShader.setMat4("projection", projection);
 		lightShader.setMat4("view", view);
 		lightShader.setMat4("model", model);
-		lightShader.setVec3("reflectColor", reflectColor);
 
 		ourMesh.drawLight();
 
